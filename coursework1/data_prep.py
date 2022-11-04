@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-#define a function to parse timestamp column date_time
+#define a function to parse timestamp column date_time (bunu ayri bi df te yap final datada boyle gozukmesin)
 def parse_datetime(df, date_time):
     """
     This function creates new attributes such as Year, Month, Day, etc. by parsing timestamp object
@@ -49,7 +49,18 @@ def categorize_hour(Hour):
         return "Night"
 
 
+#create a function to check correlations 
+def check_corr(data):
+     #df.corr().abs()[["traffic_volume"]]
+    """
+    Function that converts all catergorical variables to numeric and checks correlation
 
+    Args:
+        : 
+
+    Returns:
+        
+    """
 
 
 
@@ -85,6 +96,17 @@ def process_data(data):
     print(df.head(5))
     #what is the number of ocurrences of values in the holiday column
     print("\Ocurrences/distribution of values in holiday\n", df['holiday'].value_counts())
+
+    # 'None' composes of the vast majority of 'holiday' column. remove None to visualize the distribution of special days
+    #special_days = df.loc[df['holiday'] != 'None']
+    ## PLOT 1
+    #fig, ax = plt.subplots(figsize=(10,6))
+    #ax.boxplot(df['holiday'], df['traffic_volume'], data = special_days)
+    #ax.set_title('count of Holiday days')
+    #plt.show()  #DOESNT WORK
+
+    #df.boxplot(by ='traffic_volume', column =['holiday'], grid = False) #DOESNT WORK
+
     #print to see if there are any missing values
     print("\Missing Values\n", df.isnull().sum())  
     # Print the number of duplicates in date column
@@ -97,32 +119,23 @@ def process_data(data):
     # use customized function parse_datetime to parse datetime object
     parse_datetime(df, 'date_time')
     print("\dataframe with parsed dates\n", df.head(5))
-    #
+    # print occurences of values in hour
     print("\Ocurrences/distribution of values in hour\n", df['Hour'].value_counts().sum())
-    # Add a column to the dataframe giving textual decription of time periods 
+
+    # Add a column to the dataframe giving textual decription of time periods -should this be here?
     df['Hour_desc'] = df['Hour'].apply(categorize_hour)
     print(df['Hour_desc'].value_counts())
     print(df.head(5))
 
-    # Set pandas display options to the number of columns and rows in the dataframe
-    pd.set_option('display.max_rows', df.shape[0] + 1)
-    pd.set_option('display.max_columns', df.shape[1] + 1)
-
-    # plot 2 subplots of traffic volume over date time, 1st plot is a line plot, 2nd is a bar plot
-    #fig, axs = plt.subplots(2, 1, figsize=(9, 3))
-    #fig.suptitle('Categorical Plotting')
-    #axs[0].plot(df['date_time'], df['traffic_volume'])
-    #axs[1].bar(df['date_time'], df['traffic_volume'])
-    #plt.show()
-    df.corr().abs()[["traffic_volume"]]
- 
+    ## PLOT 2
     # plot Traffic volume per years
     fig, ax = plt.subplots(figsize=(10,6))
     ax.plot(df['date_time'], df['traffic_volume'])
     ax.set_title('Traffic volume per year')
-    plt.show()  #notice there is large gap for year 2015 -SHOULD WE DROP ROWS CORRESPONDING TO THE GAP
+    plt.show()  #notice there is large gap for year 2015 -very few records for year 2015 -SHOULD WE DROP ROWS CORRESPONDING TO THE GAP
 
-    #aggregate traffic volume hour description 
+    ## PLOT 3
+    #aggregate traffic volume hour description in a new dataframe 
     df_hour_traffic = df.groupby('Hour_desc').aggregate({'traffic_volume':'mean'})
     print(df_hour_traffic)
 
@@ -132,16 +145,25 @@ def process_data(data):
     ax.set_title('Average traffic volume per hour descriptions')
     plt.show() 
 
+    # Drop weather_description as it causes too much redundancy with weather_main
+    df = df.drop(['weather_description'], axis=1)
+    print(df.head(5))
+    # Set pandas display options to the number of columns and rows in the dataframe
+    pd.set_option('display.max_rows', df.shape[0] + 1)
+    pd.set_option('display.max_columns', df.shape[1] + 1)
+
+    #Plot weather over traffic volume
+    fig, ax = plt.subplots(figsize=(10,6))
+    ax.bar(df['weather'], df['traffic_volume'])
+    ax.set_title('traffic volume per weather features')
+    plt.show()
 
 
-
- 
-    ##Drop weather_description as it causes too much redundancy with weather_main
-    ##df = df.drop(['weather_description'], axis=1)
-    ## are there inconsistent values?
+    ## are there inconsistent values? are there outliers?
     ## Print the unique values in the `Date` column
     ## print("\nUnique values in the date column\n", df['date_time'].unique())
 
+    #create seperate functions for plots and apply parse_timestamp outside function
 
 
      

@@ -57,13 +57,33 @@ def plot_wthr(df):
     ax.set_title('traffic volume per weather features')
     plt.show()
 
-def plot_trfc_years(df):
+def subplot_trfc_years(df):
+    #aggregate traffic volume over years
+    df_agg_trfc = df.groupby('Year').aggregate({'traffic_volume':'mean'})
     # plot Traffic volume per years
-    fig, ax = plt.subplots(figsize=(10,6))
-    ax.plot(df['date_time'], df['traffic_volume'])
-    ax.set_title('Traffic volume per year')
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Traffic volume over the years')
+    axs[0].plot(df['date_time'], df['traffic_volume'])
+    axs[1].plot(df_agg_trfc.index, df_agg_trfc['traffic_volume'])
     plt.show()  #notice there is large gap for year 2015 -very few records for year 2015 -SHOULD WE DROP ROWS CORRESPONDING TO THE GAP
 
+def subplots_wthr(df):
+
+    df_rain_trfc = df.groupby('rain').aggregate({'traffic_volume':'mean'})
+    #rain has an outlier that is its max value which distorts the distribution 
+    df_rain_trfc = df[df['rain'] != df['rain'].max()]
+    df_snow_trfc = df.groupby('snow').aggregate({'traffic_volume':'mean'})
+    df_cloud_trfc = df.groupby('cloud').aggregate({'traffic_volume':'mean'})
+    
+
+    #Plot weather over traffic volume
+    fig, axs = plt.subplots(3)
+    fig.suptitle('Traffic volume per numeric weather features')
+    axs[0].bar(df_rain_trfc.index, df_rain_trfc['traffic_volume'])
+    #axs[0].bar(df['rain'], df['traffic_volume'])
+    axs[1].bar(df_snow_trfc.index, df_snow_trfc['traffic_volume'])
+    axs[2].bar(df_cloud_trfc.index, df_cloud_trfc['traffic_volume'])
+    plt.show()
 
 
 
@@ -206,7 +226,8 @@ if __name__ == "__main__":
     #plot_hour_desc(df_new)
     #plot_hlyd(df_processed)
     #plot_wthr(df_processed)
-    plot_trfc_years(df_processed)
+    subplot_trfc_years(df_processed)
+    #subplots_wthr(df_processed)
 
     #bar_plot_datetime(df_trfc_raw_xlsx)
     #check_corr(df_trfc_raw_xlsx)

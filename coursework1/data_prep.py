@@ -185,7 +185,7 @@ def process_data(data):
         data: Pandas dataframe of the traffic data
 
     Returns:
-        None
+        DataFrame: Prepared pandas dataframe 
     """
     # Dataframe with the data
     df = data
@@ -205,21 +205,25 @@ def process_data(data):
     # Print the first 5 rows
     print("\nHead - first 5 rows\n", df.head(5))
 
+    # Set pandas display options to the number of columns and rows in the dataframe
+    pd.set_option('display.max_rows', df.shape[0] + 1)
+    pd.set_option('display.max_columns', df.shape[1] + 1)
+
     # Drop weather_description as it causes too much redundancy with weather_main
     df = df.drop(['weather_description'], axis=1)
     print(df.head(5))
 
-    # Print descriptions of the data 
-    print("\Statistical descriptions of data\n", df.describe()) # note findings about distributions, central tendecies...
-
     #convert temperature in Kelvin to Celcius for simplicity
     df["temp"] = (df["temp"]-273.15)
 
-    #what is the number of ocurrences of values in the holiday column
-    print("\Ocurrences/distribution of values in holiday\n", df['holiday'].value_counts())  # plot this without holiday
+    # Print descriptions of the data 
+    print("\Statistical descriptions of data\n", df.describe()) 
 
-    #print to see if there are any missing values
-    print("\Missing Values\n", df.isnull().sum())  
+    # Print descriptions of the categorical data 
+    print("\Statistical descriptions of categorical data\n", df.describe(include='object'))
+
+    # Print the number of ocurrences of values in the holiday column
+    print("\Ocurrences/distribution of values in holiday\n", df['holiday'].value_counts()) 
 
     # Print the number of duplicates in date column
     print("\Duplicates in date\n", df['date_time'].duplicated().sum())
@@ -230,10 +234,6 @@ def process_data(data):
 
     # Find the range of the data entries
     print("\Min & Max values of data\n", df['date_time'].min(),df['date_time'].max()) 
-
-    # Set pandas display options to the number of columns and rows in the dataframe
-    pd.set_option('display.max_rows', df.shape[0] + 1)
-    pd.set_option('display.max_columns', df.shape[1] + 1)
 
     return df
     

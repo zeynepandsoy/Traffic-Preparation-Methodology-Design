@@ -3,131 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-#define a function to parse timestamp column date_time (bunu ayri bi df te yap final datada boyle gozukmesin)
-def parse_datetime(df):
-    """
-    This function creates new attributes such as Year, Month, Day, etc. by parsing timestamp object
-
-    Args:
-        df: dataframe with timestamp 
-
-    Returns:
-        
-    """
-
-    df['Year'] = df['date_time'].dt.year
-    df['Month'] = df['date_time'].dt.month
-    df['Day'] = df['date_time'].dt.day
-    df['Weekday'] = df['date_time'].dt.weekday
-    df['Hour'] = df['date_time'].dt.hour
-    # Add a column to the dataframe giving textual decription of time periods based on hours
-    df['Hour_desc'] = df['Hour'].apply(categorize_hour)
-    return df
-
-
-def plot_hldy(df_hldy):
-    """
-    This function creates a new dataframe replacing holiday column with holiday column minus None entries
-    this function plots the new dataframe's modified column with respect to aggreagate traffic volume
-
-    Args:
-        df: dataframe to be plotted
-
-    Returns:
-        
-    """
-    #'None' composes of the vast majority of 'holiday' column. remove None to visualize the distribution of special days
-    spcl_df = df_hldy[df_hldy['holiday'] != 'None']
-    #aggregate traffic volume hour description in a new dataframe 
-    df_trfc_spcl = df_hldy.groupby(spcl_df['holiday']).aggregate({'traffic_volume':'mean'})
-    print(df_trfc_spcl)
-
-    fig, ax = plt.subplots(figsize=(15,8))
-    ax.bar(df_trfc_spcl.index, df_trfc_spcl['traffic_volume'])
-    ax.set_title('Average traffic volume per Holiday days')
-    plt.show()  
-
-def plot_hour_desc(df_hr_dsc):
-    """
-    this function plots aggregate traffic volume per hour descriptions such as afternoon, late night ...
-
-    Args:
-        df_hr_dsc: dataframe to be plotted
-
-    Returns:
-        
-    """
-    #aggregate traffic volume hour description in a new dataframe 
-    df_hour_traffic = df_hr_dsc.groupby('Hour_desc').aggregate({'traffic_volume':'mean'})
-    print(df_hour_traffic)
-
-    #plot the mean of traffic volume for each group of hour desciption 
-    fig, ax = plt.subplots(figsize=(10,6))
-    ax.bar(df_hour_traffic.index, df_hour_traffic['traffic_volume'])
-    ax.set_title('Average traffic volume per hour descriptions')
-    plt.show() 
-
-def plot_wthr(df_wthr_trfc):
-    """
-    this function plots traffic volumes per weather features
-
-    Args:
-        df_wthr_trfc: dataframe to be plotted
-
-    Returns:
-        
-    """
-    #Plot weather over traffic volume
-    fig, ax = plt.subplots(figsize=(10,6))
-    ax.bar(df_wthr_trfc['weather'], df_wthr_trfc['traffic_volume'])
-    ax.set_title('traffic volume per weather features')
-    plt.show()
-
-def sbplt_trfc_date(df_trfc):
-    """
-    this function generates 2 subplots
-
-    Args:
-        df_trfc: dataframes to be plotted
-
-    Returns:
-        
-    """
-    #aggregate traffic volume over years
-    df_agg_trfc = df_trfc.groupby('Year').aggregate({'traffic_volume':'mean'})
-    # plot Traffic volume per years
-    fig, axs = plt.subplots(2)
-    fig.suptitle('Traffic volume over the years')
-    axs[0].plot(df_trfc['date_time'], df_trfc['traffic_volume'])
-    axs[1].plot(df_agg_trfc.index, df_agg_trfc['traffic_volume'])
-    plt.show()  #notice there is large gap for year 2015 -very few records for year 2015 -SHOULD WE DROP ROWS CORRESPONDING TO THE GAP
-
-def sbplts_wthr(df_wthr):
-    """
-    this function generates 3 subplots
-
-    Args:
-        df_wthr: dataframes to be plotted
-
-    Returns:
-        
-    """
-
-    df_rain_trfc = df_wthr.groupby('rain').aggregate({'traffic_volume':'mean'})
-    #rain has an outlier that is its max value which distorts the distribution 
-    df_rain_trfc = df_wthr[df_wthr['rain'] != df_wthr['rain'].max()]
-    df_snow_trfc = df_wthr.groupby('snow').aggregate({'traffic_volume':'mean'})
-    df_cloud_trfc = df_wthr.groupby('cloud').aggregate({'traffic_volume':'mean'})
-    
-
-    #Plot weather features over traffic volume
-    fig, axs = plt.subplots(3)
-    fig.suptitle('Traffic volume per numeric weather features')
-    axs[0].bar(df_rain_trfc.index, df_rain_trfc['traffic_volume'])
-    axs[1].bar(df_snow_trfc.index, df_snow_trfc['traffic_volume'])
-    axs[2].bar(df_cloud_trfc.index, df_cloud_trfc['traffic_volume'])
-    plt.show()
-
 
 
 #define a function to categorize hours into different time periods
@@ -154,25 +29,137 @@ def categorize_hour(Hour):
     elif Hour in [21,22,23,0]:
         return "Night"
 
-###################
-#create a function to check correlations 
-#def check_corr(data):
-     #df.corr().abs()[["traffic_volume"]]
+
+#define a function to parse timestamp column date_time 
+def parse_datetime(df):
     """
-    Function that converts datatypes of variables to numeric and plots correlation
+    This function creates new attributes such as Year, Month, Day, etc. by parsing timestamp object
+
+    Args:
+        df: pandas dataframe with timestamp 
+
+    Returns:
+        df: pandas dataframe with parsed datetime columns 'year', 'month', 'day', 'weekday', 
+        'hour', and another categorical column; 'Hour_desc' created using categorize_hour(Hour)
         
     """
-   # df_corr = data
-    #print data rtypes
-    #df_corr.dtypes
-    # use customized function parse_datetime to parse datetime object
-    #df_corr['date_time'] = parse_datetime(df_corr, 'date_time')
-    #weather and holiday have object type convert to integer
-    #df_corr['holiday'] = df_corr['holiday'].astype('int')
-   # df_corr['weather'] = df_corr['weather'].astype('int')
+    df['Year'] = df['date_time'].dt.year
+    df['Month'] = df['date_time'].dt.month
+    df['Day'] = df['date_time'].dt.day
+    df['Weekday'] = df['date_time'].dt.weekday
+    df['Hour'] = df['date_time'].dt.hour
+    # Add a column to the dataframe giving textual decription of time periods based on hours
+    df['Hour_desc'] = df['Hour'].apply(categorize_hour)
+    return df
 
-###################
 
+def plot_hldy(df_hldy):
+    """
+    This function creates a new dataframe replacing holiday column with holiday column without None entries
+    this function plots the new dataframe's modified column with respect to aggreagate traffic volume
+
+    Args:
+        df: dataframe to be plotted
+
+    Returns:
+        None
+        
+    """
+    #'None' composes of the vast majority of 'holiday' column. remove None to visualize the distribution of special days
+    spcl_df = df_hldy[df_hldy['holiday'] != 'None']
+    #aggregate traffic volume hour description in a new dataframe 
+    df_trfc_spcl = df_hldy.groupby(spcl_df['holiday']).aggregate({'traffic_volume':'mean'})
+    print(df_trfc_spcl)
+
+    fig, ax = plt.subplots(figsize=(15,8))
+    ax.bar(df_trfc_spcl.index, df_trfc_spcl['traffic_volume'])
+    ax.set_title('Average traffic volume per Holiday days')
+    plt.show()  
+
+def plot_hour_desc(df_hr_dsc):
+    """
+    this function plots aggregate traffic volume per hour descriptions such as afternoon, late night ...
+
+    Args:
+        df_hr_dsc: dataframe to be plotted
+
+    Returns:
+        None
+        
+    """
+    #aggregate traffic volume hour description in a new dataframe 
+    df_hour_traffic = df_hr_dsc.groupby('Hour_desc').aggregate({'traffic_volume':'mean'})
+    print(df_hour_traffic)
+
+    #plot the mean of traffic volume for each group of hour desciption 
+    fig, ax = plt.subplots(figsize=(10,6))
+    ax.bar(df_hour_traffic.index, df_hour_traffic['traffic_volume'])
+    ax.set_title('Average traffic volume per hour descriptions')
+    plt.show() 
+
+def plot_wthr(df_wthr_trfc):
+    """
+    this function plots traffic volumes per weather features
+
+    Args:
+        df_wthr_trfc: dataframe to be plotted
+
+    Returns:
+        None
+        
+    """
+    #Plot weather over traffic volume
+    fig, ax = plt.subplots(figsize=(10,6))
+    ax.bar(df_wthr_trfc['weather'], df_wthr_trfc['traffic_volume'])
+    ax.set_title('traffic volume per weather features')
+    plt.show()
+
+def sbplt_trfc_date(df_trfc):
+    """
+    This function generates 2 subplots displaying how traffic volume changes with respect to time
+
+    Args:
+        df_trfc: dataframes to be plotted
+
+    Returns:
+        None
+        
+    """
+    #aggregate traffic volume over years
+    df_agg_trfc = df_trfc.groupby('Year').aggregate({'traffic_volume':'mean'})
+    # plot Traffic volume per years
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Traffic volume over the years')
+    axs[0].plot(df_trfc['date_time'], df_trfc['traffic_volume'])
+    axs[1].plot(df_agg_trfc.index, df_agg_trfc['traffic_volume'])
+    plt.show() 
+
+def sbplts_wthr(df_wthr):
+    """
+    this function generates 3 subplots of weather features
+
+    Args:
+        df_wthr: dataframes to be plotted
+
+    Returns:
+        None
+        
+    """
+
+    df_rain_trfc = df_wthr.groupby('rain').aggregate({'traffic_volume':'mean'})
+    #rain has an outlier that is its max value which distorts the distribution 
+    df_rain_trfc = df_wthr[df_wthr['rain'] != df_wthr['rain'].max()]
+    df_snow_trfc = df_wthr.groupby('snow').aggregate({'traffic_volume':'mean'})
+    df_cloud_trfc = df_wthr.groupby('cloud').aggregate({'traffic_volume':'mean'})
+    
+
+    #Plot weather features over traffic volume
+    fig, axs = plt.subplots(3)
+    fig.suptitle('Traffic volume per numeric weather features')
+    axs[0].bar(df_rain_trfc.index, df_rain_trfc['traffic_volume'])
+    axs[1].bar(df_snow_trfc.index, df_snow_trfc['traffic_volume'])
+    axs[2].bar(df_cloud_trfc.index, df_cloud_trfc['traffic_volume'])
+    plt.show()
 
 
 def process_data(data):
@@ -238,16 +225,6 @@ def process_data(data):
     return df
     
 
-    ## are there inconsistent values? are there outliers?
-    ## Print the unique values in the `Date` column
-    ## print("\nUnique values in the date column\n", df['date_time'].unique())
-
-
-
-     
-    
-
-
     
 
 
@@ -264,8 +241,8 @@ if __name__ == "__main__":
     #plot_hour_desc(df_new)
     #plot_hldy(df_processed)
     #plot_wthr(df_processed)
-    sbplt_trfc_date(df_processed)
-    #subplots_wthr(df_processed)
+    #sbplt_trfc_date(df_processed)
+    sbplts_wthr(df_processed)
 
     #bar_plot_datetime(df_trfc_raw_xlsx)
     #check_corr(df_trfc_raw_xlsx)

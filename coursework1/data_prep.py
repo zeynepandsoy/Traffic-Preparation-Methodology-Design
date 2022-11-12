@@ -237,12 +237,19 @@ if __name__ == "__main__":
     df_processed = process_data(df_trfc_raw_xlsx) 
     #parse_datetime  
     df_new = parse_datetime(df_processed)
-   
+    # Save the prepared dataframe
+    prepared_data_xlsx_name = Path(__file__).parent.joinpath('data', 'prepared_data.xlsx')
+    df_trfc_raw_xlsx.to_excel(prepared_data_xlsx_name, index = False)
+      
     #plot_hour_desc(df_new)
     #plot_hldy(df_processed)
     #plot_wthr(df_processed)
     #sbplt_trfc_date(df_processed)
     sbplts_wthr(df_processed)
 
-    #bar_plot_datetime(df_trfc_raw_xlsx)
-    #check_corr(df_trfc_raw_xlsx)
+    # Save the prepared dataframe
+    # # The DataFrame before the grouping to a new xlsx. 'index=False' indicates that row names
+    #should not be saved.
+    #prepared_data_xlsx_name = Path(__file__).parent.joinpath('data', 'prepared_data.xlsx')
+ 
+    

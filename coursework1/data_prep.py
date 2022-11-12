@@ -239,7 +239,7 @@ if __name__ == "__main__":
     df_new = parse_datetime(df_processed)
     # Save the prepared dataframe
     prepared_data_xlsx_name = Path(__file__).parent.joinpath('data', 'prepared_data.xlsx')
-    df_trfc_raw_xlsx.to_excel(prepared_data_xlsx_name, index = False)
+    df_processed.to_excel(prepared_data_xlsx_name, index = False)
       
     #plot_hour_desc(df_new)
     #plot_hldy(df_processed)

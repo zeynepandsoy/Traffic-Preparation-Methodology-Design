@@ -43,14 +43,15 @@ def parse_datetime(df):
         'hour', and another categorical column; 'Hour_desc' created using categorize_hour(Hour)
         
     """
-    df['Year'] = df['date_time'].dt.year
-    df['Month'] = df['date_time'].dt.month
-    df['Day'] = df['date_time'].dt.day
-    df['Weekday'] = df['date_time'].dt.weekday
-    df['Hour'] = df['date_time'].dt.hour
+    df_copy = df.copy()
+    df_copy['Year'] = df_copy['date_time'].dt.year
+    df_copy['Month'] = df_copy['date_time'].dt.month
+    df_copy['Day'] = df_copy['date_time'].dt.day
+    df_copy['Weekday'] = df_copy['date_time'].dt.weekday
+    df_copy['Hour'] = df_copy['date_time'].dt.hour
     # Add a column to the dataframe giving textual decription of time periods based on hours
-    df['Hour_desc'] = df['Hour'].apply(categorize_hour)
-    return df
+    df_copy['Hour_desc'] = df_copy['Hour'].apply(categorize_hour)
+    return df_copy
 
 
 def plot_hldy(df_hldy):
@@ -239,7 +240,7 @@ if __name__ == "__main__":
     df_new = parse_datetime(df_processed)
     # Save the prepared dataframe
     prepared_data_xlsx_name = Path(__file__).parent.joinpath('data', 'prepared_data.xlsx')
-    df_processed.to_excel(prepared_data_xlsx_name, index = False)
+    df_processed.to_excel(prepared_data_xlsx_name, index = False) ##WRONG
       
     #plot_hour_desc(df_new)
     #plot_hldy(df_processed)
@@ -247,9 +248,3 @@ if __name__ == "__main__":
     #sbplt_trfc_date(df_processed)
     sbplts_wthr(df_processed)
 
-    # Save the prepared dataframe
-    # # The DataFrame before the grouping to a new xlsx. 'index=False' indicates that row names
-    #should not be saved.
-    #prepared_data_xlsx_name = Path(__file__).parent.joinpath('data', 'prepared_data.xlsx')
- 
-    

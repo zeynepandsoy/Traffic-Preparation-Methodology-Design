@@ -25,22 +25,48 @@ def categorize_hour(Hour):
     elif Hour in [13,14,15,16]:
         return "Afternoon"
     elif Hour in [17,18,19,20]:
-        return "Evening/Rush Hour"
+        return "Evening"
     elif Hour in [21,22,23,0]:
         return "Night"
 
+#define a function to categorize days into days of the week 
+def categorize_day(Day):
+    """
+    This function categorizes days of the week into textual variables
+
+    Args:
+        Day : Numerical data to be categorized 
+
+    Returns:
+        str: Textual description of the asssociated Day
+    """
+    if Day == 0:
+        return "Monday"
+    elif Day == 1:
+        return "Tuesday"
+    elif Day == 2:
+        return "Wednesday"
+    elif Day == 3:
+        return "Thursday"
+    elif Day == 4:
+        return "Friday"
+    elif Day == 5:
+        return "Saturday"
+    else:
+        return "Sunday"
 
 #define a function to parse timestamp column date_time 
 def parse_datetime(df):
     """
-    This function creates new attributes such as Year, Month, Day, etc. by parsing timestamp object
+    This function creates new attributes such as Year, Month, Day, etc. by parsing timestamp object and 
+    creates additional colums 'categorized_hour' and 'categorized_weekday'
 
     Args:
-        df: pandas dataframe with timestamp 
+        dataframe: pandas dataframe with timestamp 
 
     Returns:
-        df: pandas dataframe with parsed datetime columns 'year', 'month', 'day', 'weekday', 
-        'hour', and another categorical column; 'Hour_desc' created using categorize_hour(Hour)
+        dataframe: copy of pandas dataframe with parsed datetime columns and textual descriptions of based 
+        from 'Hour' and 'Weekday'
         
     """
     df_copy = df.copy()
@@ -50,7 +76,9 @@ def parse_datetime(df):
     df_copy['Weekday'] = df_copy['date_time'].dt.weekday
     df_copy['Hour'] = df_copy['date_time'].dt.hour
     # Add a column to the dataframe giving textual decription of time periods based on hours
-    df_copy['Hour_desc'] = df_copy['Hour'].apply(categorize_hour)
+    df_copy['categorized_hour'] = df_copy['Hour'].apply(categorize_hour)
+    # Add another column to the dataframe giving textual decription of weekdays
+    df_copy['categorized_weekday'] = df_copy['Weekday'].apply(categorize_day)
     return df_copy
 
 
@@ -77,26 +105,32 @@ def plot_hldy(df_hldy):
     ax.set_title('Average traffic volume per Holiday days')
     plt.show()  
 
-def plot_hour_desc(df_hr_dsc):
+def sbplt_categorize_dates(df_ctgrz):
     """
-    this function plots aggregate traffic volume per hour descriptions such as afternoon, late night ...
+    this function creates 2 subplots aggregate traffic volume per categorized hour and weekday
 
     Args:
-        df_hr_dsc: dataframe to be plotted
+        df_ctgrz: dataframe to be plotted indexing categorized datetime characteristics
 
     Returns:
         None
         
     """
-    #aggregate traffic volume hour description in a new dataframe 
-    df_hour_traffic = df_hr_dsc.groupby('Hour_desc').aggregate({'traffic_volume':'mean'})
+    #aggregate traffic volume per categorized hour in a new dataframe 
+    df_hour_traffic = df_ctgrz.groupby('categorized_hour').aggregate({'traffic_volume':'mean'})
     print(df_hour_traffic)
 
-    #plot the mean of traffic volume for each group of hour desciption 
-    fig, ax = plt.subplots(figsize=(10,6))
-    ax.bar(df_hour_traffic.index, df_hour_traffic['traffic_volume'])
-    ax.set_title('Average traffic volume per hour descriptions')
+    #aggregate traffic volume per categorized weekday in a new dataframe 
+    df_day_traffic = df_ctgrz.groupby('categorized_weekday').aggregate({'traffic_volume':'mean'})
+    print(df_day_traffic)
+
+    #create 2 subplots plotting the mean of traffic volume for each category of hour and weekday 
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Average traffic volume per categorized hour and weekday')
+    axs[0].bar(df_hour_traffic.index, df_hour_traffic['traffic_volume'])
+    axs[1].bar(df_day_traffic.index, df_day_traffic['traffic_volume'])
     plt.show() 
+
 
 def plot_wthr(df_wthr_trfc):
     """
@@ -216,6 +250,10 @@ def process_data(data):
     # Print the number of duplicates in date column
     print("\Duplicates in date\n", df['date_time'].duplicated().sum())
 
+    # Investigate which observations are duplicates
+    duplicates = df[df.duplicated(keep=False)]
+    print("\Visualize duplicates in date\n", duplicates['date_time'])
+
     # Drop the duplicate date entries 
     df.drop_duplicates(subset=['date_time'],keep='last', inplace=True)
     print("\Duplicates in date\n", df['date_time'].duplicated().sum())
@@ -231,7 +269,7 @@ def process_data(data):
 
 if __name__ == "__main__":
     # Define the path to the excel datafile in a way that works on both Mac and Windows
-    trfc_raw_xlsx = Path(__file__).parent.joinpath('data', 'interstate-traffic.xlsx')
+    trfc_raw_xlsx = Path(__file__).parent.joinpath('data', 'data_set_initial.xlsx')
     # Load the xlsx file into a pandas DataFrame 
     df_trfc_raw_xlsx = pd.read_excel(trfc_raw_xlsx, sheet_name ='interstate-traffic')
     # Call the data_prep function and pass the data, return the processed data
@@ -239,12 +277,12 @@ if __name__ == "__main__":
     #parse_datetime  
     df_new = parse_datetime(df_processed)
     # Save the prepared dataframe
-    prepared_data_xlsx_name = Path(__file__).parent.joinpath('data', 'prepared_data.xlsx')
-    df_processed.to_excel(prepared_data_xlsx_name, index = False) ##WRONG
-      
-    #plot_hour_desc(df_new)
+    prepared_data_xlsx_name = Path(__file__).parent.joinpath('data', 'data_set_prepared.xlsx')
+    df_processed.to_excel(prepared_data_xlsx_name, index = False) 
+    # Call the plot functions the explore the visualisations
+    sbplt_categorize_dates(df_new)
     #plot_hldy(df_processed)
     #plot_wthr(df_processed)
     #sbplt_trfc_date(df_processed)
-    sbplts_wthr(df_processed)
-
+    #sbplts_wthr(df_processed)
+    

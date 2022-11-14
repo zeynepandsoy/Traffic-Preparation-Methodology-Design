@@ -151,7 +151,7 @@ def plot_wthr(df_wthr_trfc):
 
 def sbplt_trfc_date(df_trfc):
     """
-    This function generates 2 subplots displaying how traffic volume changes with respect to time
+    This function generates 2 subplots displaying the evolution of traffic volume with respect to time
 
     Args:
         df_trfc: dataframes to be plotted
@@ -171,7 +171,9 @@ def sbplt_trfc_date(df_trfc):
 
 def sbplts_wthr(df_wthr):
     """
-    this function generates 3 subplots of weather features
+    this function generates 3 subplots of weather features; the outlier of 'rain' is removed. 
+    Then respectively columns 'rain', 'snow' and 'cloud' are plotted with respect to aggegate traffic volume
+
 
     Args:
         df_wthr: dataframes to be plotted
@@ -280,9 +282,9 @@ if __name__ == "__main__":
     prepared_data_xlsx_name = Path(__file__).parent.joinpath('data', 'data_set_prepared.xlsx')
     df_processed.to_excel(prepared_data_xlsx_name, index = False) 
     # Call the plot functions the explore the visualisations
-    sbplt_categorize_dates(df_new)
+    #sbplt_categorize_dates(df_new)
     #plot_hldy(df_processed)
-    #plot_wthr(df_processed)
-    #sbplt_trfc_date(df_processed)
-    #sbplts_wthr(df_processed)
+    plot_wthr(df_processed)
+    sbplt_trfc_date(df_new)
+    sbplts_wthr(df_processed)
     

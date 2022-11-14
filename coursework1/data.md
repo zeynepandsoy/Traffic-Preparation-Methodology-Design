@@ -81,11 +81,10 @@ Print statistical descriptions of the data
 ```
     print("\Statistical descriptions of data\n", df.describe())
 ```
-**Observation:** There may be inconsistent data entries as temperature records at absolute zero is observed. The distributions of 'snow' and 'rain' are not well defined as there are outliers with extreme high or low records, we may later decide to remove these weather attributes as the attribute 'weather' identifies whether its raining or snowing or not.
+**Observation:** There may be inconsistent data entries as temperature records at absolute zero is observed. However Minneapolis is one the coldest metropolitan areas in the US with temperatures falling around -20 fairly commonly in winter months. Hence these outliers may be simply be explained as normal weather conditions for the geographical location. 
+The distributions of 'snow' and 'rain' are not well defined as there are outliers with extreme high or low records, we may later decide to remove these weather attributes as the attribute 'weather' identifies whether its raining or snowing or not.
 
 **Note:** This command would only include the description of numerical dataype columns, below we include the object type
-
-INCLUDE INFO ABOUT DISTRIBUTION TENDENCIES
 
 Print statistical descriptions of the 'object' type columns
 ```
@@ -129,38 +128,6 @@ In order to understand how traffic volume changes with respect to date and time,
 
 There are 3 customized functions created to parse 'date_time' column and add additional categorized hour and weekday columns, these are `parse_datetime()`, `categorize_hour()` and `categorize_day()`
 
-### Define a function called `parse_datetime()` to parse the timestamp column and reveal new characteristics such as 'year', 'month', 'hour' ...
-
-```
-def parse_datetime(df):
-    """
-    This function creates new attributes such as Year, Month, Day, etc. by parsing timestamp object and 
-    creates additional colums 'categorized_hour' and 'categorized_weekday'
-
-    Args:
-        dataframe: pandas dataframe with timestamp 
-
-    Returns:
-        dataframe: copy of pandas dataframe with parsed datetime columns and textual descriptions of based from 'Hour' and 'Weekday'
-        
-    """
-    df_copy = df.copy()
-    df_copy['Year'] = df_copy['date_time'].dt.year
-    df_copy['Month'] = df_copy['date_time'].dt.month
-    df_copy['Day'] = df_copy['date_time'].dt.day
-    df_copy['Weekday'] = df_copy['date_time'].dt.weekday
-    df_copy['Hour'] = df_copy['date_time'].dt.hour
-```
-Using `categorize_hour()`, add a column to the dataframe giving textual decription of time periods based on hours
-```
-    df_copy['categorized_hour'] = df_copy['Hour'].apply(categorize_hour)
-```
-Using `categorize_day()`, add a column to the dataframe giving textual decription of weekdays 
-```
-   df_copy['categorized_weekday'] = df_copy['Weekday'].apply(categorize_day)
-    return df_copy
-```
-
 ### Define a function called `categorize_hour()` to categorize hours into differet time periods such as; 'Late Night', 'Early Morning'..
 
 Categorizing a day based on its hours can reveal cruical daily patterns such as rush hours where the traffic volumes are exceptionally high
@@ -191,10 +158,9 @@ def categorize_hour(Hour):
         return "Night"
 ```
 
-
 ### Define a function called `categorize_day()` to categorize days into days of the week such as; 'Monday','Tuesday'... 
 
-Categorizing a week based on its days can reveal weekly driving patterns of people. Acknowledging which days of the week yield the highest/lowest traffic volumes are important for planning
+Categorizing a week based on its days can reveal weekly driving patterns of people. Acknowledging which days of the week yield the highest/lowest traffic volumes are important for traffic planning
 ```
 #define a function to categorize days into days of the week 
 def categorize_day(Day):
@@ -223,18 +189,48 @@ def categorize_day(Day):
         return "Sunday"
 ```
 
+### Define a function called `parse_datetime()` to parse the timestamp column and reveal new characteristics such as 'year', 'month', 'hour' ...
+
+```
+def parse_datetime(df):
+    """
+    This function creates new attributes such as Year, Month, Day, etc. by parsing timestamp object and 
+    creates additional colums 'categorized_hour' and 'categorized_weekday'
+
+    Args:
+        dataframe: pandas dataframe with timestamp 
+
+    Returns:
+        dataframe: copy of pandas dataframe with parsed datetime columns and textual descriptions based from 'Hour' and 'Weekday'
+        
+    """
+    df_copy = df.copy()
+    df_copy['Year'] = df_copy['date_time'].dt.year
+    df_copy['Month'] = df_copy['date_time'].dt.month
+    df_copy['Day'] = df_copy['date_time'].dt.day
+    df_copy['Weekday'] = df_copy['date_time'].dt.weekday
+    df_copy['Hour'] = df_copy['date_time'].dt.hour
+```
+Using `categorize_hour()`, add a column to the dataframe giving textual decription of time periods based on hours
+```
+    df_copy['categorized_hour'] = df_copy['Hour'].apply(categorize_hour)
+```
+Using `categorize_day()`, add a column to the dataframe giving textual decription of weekdays 
+```
+   df_copy['categorized_weekday'] = df_copy['Weekday'].apply(categorize_day)
+    return df_copy
+```
 
 
+## Data Visualisation
 
-## PLOTS
-In order to answer the data science questions for the target audience we will implement visualosation tecniques. Through visually observing how certain variables change wih respect to the predictor and outcome variables insightful patterns can be revealed.
+In order to answer the data science questions for the target audience, data visualisation techniques will be implemented. Through visually observing how certain variables change wih respect to the predictor and outcome variables, insightful patterns can be revealed.
 
 ### Plot 1 : Aggregate traffic volume with respect to special holiday days (exluding 'None' holiday)
 ```
 def plot_hldy(df_hldy):
     """
-    This function creates a new dataframe replacing holiday column with holiday column without None entries
-    this function plots the new dataframe's modified column with respect to aggreagate traffic volume
+    This function creates a new dataframe replacing holiday column with holiday column without None entries and plots the new column with respect to aggreagate traffic volume
 
     Args:
         df: dataframe to be plotted
@@ -260,8 +256,8 @@ plot aggregate traffic volume with respect to holiday days
     ax.set_title('Average traffic volume per Holiday days')
     plt.show()  
 ```
-**Observation:** From the plot, we observe that the most intense traffic jams happen during New Years Day, than respectively Memorial and Independence Day. Least traffic congestion happens on Colombus Day.
 
+**Observation:** From the plot, we observe that the most intense traffic jams happen during New Years Day, than respectively Memorial and Independence Day. Least traffic congestion happens on Colombus Day.
 
 
 ## Plot 2 : Aggregate traffic volume in 2 subplots, first with respect to categorized hour than to categorized weekday
@@ -280,14 +276,12 @@ def sbplt_categorize_dates(df_ctgrz):
 ```
 In order to understand how traffic volume changes within a day, plotting aggegate traffic volume over hour descriptions such as 'Afternoon', 'Morning' would be insightfull in understanding daily patterns
 
-aggregate traffic volume per hour description in a new dataframe 
+aggregate traffic volume per categorized_hour in a new dataframe 
 ```
     df_hour_traffic = df_ctgrz.groupby('categorized_hour').aggregate({'traffic_volume':'mean'})
     print(df_hour_traffic)
 ```
-Understanding how traffic volume changes within a week is also really important in distinguishing which days of the week yield the most traffic jams 
-
-aggregate traffic volume per categorized weekday in a new dataframe 
+aggregate traffic volume per categorized_weekday in a new dataframe 
 ```
     df_day_traffic = df_ctgrz.groupby('categorized_weekday').aggregate({'traffic_volume':'mean'})
     print(df_day_traffic)
@@ -300,11 +294,11 @@ create 2 subplots plotting the mean of traffic volume for each category of hour 
     axs[1].bar(df_day_traffic.index, df_day_traffic['traffic_volume'])
     plt.show() 
 ```
-**Observation from categorized hour plot:** We observe that majoirty of the poeple go put in traffic mostly in the Afternoon hours (13,14,15,16) than in the morning. Than, almost at equal traffic volumes comes Early Morning and Afternoon, which is intuitave given these are the times when most people leave for and come back from work. Least traffic congestion by far is observed at Late Nights.
+**Observation from categorized hour plot:** We observe that the majority of poeple go out in traffic mostly in the Afternoon hours (13,14,15,16) compared to the morning. Than, almost at equal traffic volumes comes Early Morning and Afternoon, which is intuitave given these are the times when most people leave for and come back from work. Least traffic congestion by far is observed at Late Nights.
 
-**Observation from categorized weekday plot:** we observe that weekdays or working days usually indicate higher traffic volumes whereas in weekends there is relatively less traffic.
+**Observation from categorized weekday plot:** we observe that weekdays or working days (Monday to Friday)usually indicate higher traffic volumes whereas in weekends (Saturday and Sunday) there is relatively less traffic.
 
-*Remark:* Plotting mean traffic volume over categorized hours imply that early morning and afternoon yield relatively high traffic volumes, which are usually times when people leave and come back from work or school. Plotting mean traffic volume over categorized days imply that weekdays (Monday to Friday) yield relatively higher traffic volumes than weekends (Saturday and Sunday). Hence, we can presume that  for the given road withing the specified timeframe people usually tend to drive on weekdays mostly between early morning to afternoon to get to their work/school. 
+*Remark:* Plotting mean traffic volume over categorized hours implies that early morning and afternoon yield relatively high traffic volumes, which are usually times when people leave and come back from work or school. Plotting mean traffic volume over categorized days imply that weekdays yield relatively higher traffic volumes than weekends. Hence, we can presume that  for the given road withing the specified timeframe people usually tend to drive on weekdays mostly between early morning to afternoon to get to their work/school. 
 
 ## Plot 3: Traffic volume per weather feature
 ```
@@ -320,7 +314,7 @@ def plot_wthr(df_wthr_trfc):
         
     """
 ```
-Understanding the impact of each weather feature on traffic volume is crucial to understand usually under which weather conditions do people tend to go out in traffic
+Understanding the impact of each weather feature on traffic volume is crucial to understand under which weather conditions do people tend to go out in traffic
 
 Plot weather over traffic volume
 ```
@@ -335,7 +329,7 @@ Plot weather over traffic volume
 ```
 def sbplt_trfc_date(df_trfc):
     """
-    This function generates 2 subplots displaying how traffic volume changes with respect to time
+    This function generates 2 subplots displaying the evolution of traffic volume with respect to time
 
     Args:
         df_trfc: dataframes to be plotted
@@ -345,13 +339,13 @@ def sbplt_trfc_date(df_trfc):
         
     """
 ```
-Undertanding how traffic volume changes over time can reveal useful insights about seasanol and annual patterns of traffic volumes.
+Undertanding how traffic volume changes over time can reveal useful insights about seasanol and annual patterns of traffic volumes. These findins are exceptionally important in future forecasting.
 
 Aggregate traffic volume over years
 ```
     df_agg_trfc = df_trfc.groupby('Year').aggregate({'traffic_volume':'mean'})
 ````
-plot 2 subplots; 1st is Traffic volume per years, 2nd is aggregate traffic volume over the years
+create 2 subplots of traffic volume over the years, and aggregate traffic volume over the years
 ```
     fig, axs = plt.subplots(2)
     fig.suptitle('Traffic volume over the years')
@@ -359,15 +353,14 @@ plot 2 subplots; 1st is Traffic volume per years, 2nd is aggregate traffic volum
     axs[1].plot(df_agg_trfc.index, df_agg_trfc['traffic_volume'])
     plt.show() 
 ```
-**Observation:** When we look at the annual recorded traffic volume plot, we see a gap within the data between 2014 and 2015 meaning we dont have any records of traffic volume data for year 2015. Hence, in future modeling and prediction stages, the focus will be on the period between 2016 and 2018 which appear to include complete information. From 2nd plot we can also see this decrease.
-buna bidaha bak
+**Observation:** When we look at the annual recorded traffic volume plot (1st ploy), we see a gap within the data between 2014 and 2015 meaning we dont have any records of traffic volume data for year 2015. Hence, in future modeling and prediction stages, the focus will be on the period between 2016 and 2018 which appear to include complete information. From 2nd plot, with aggregate traffic volume we see a more clear trend. We see that there is a decreasing trend in mean traffic volume between 2013-2016, the peak is seen at 2017 than again a decreasing trend is observed.
 
 
 ## Plot 5: Aggregate traffic volume per weather features
 ```
 def sbplts_wthr(df_wthr):
     """
-    this function generates 3 subplots of weather features
+    this function generates 3 subplots of weather features; the outlier of 'rain' is removed. Then respectively columns 'rain', 'snow' and 'cloud' are plotted with respect to aggegate traffic volume
 
     Args:
         df_wthr: dataframes to be plotted
@@ -377,7 +370,7 @@ def sbplts_wthr(df_wthr):
         
     """
 ```
-'rain' has an outlier that is its max value which distorts the distribution, we replace the 'rain' column in a new dataframe removing its max value to visualise a cleaner distribution
+'rain' has an outlier that is its max value which distorts the distribution, we replace 'rain' column in a new dataframe removing its max value to visualise a cleaner distribution
 ```
     df_rain_trfc = df_wthr[df_wthr['rain'] != df_wthr['rain'].max()]
 ```
@@ -396,7 +389,7 @@ Plot weather features over traffic volume
     axs[2].bar(df_cloud_trfc.index, df_cloud_trfc['traffic_volume'])
     plt.show()
 ```
-**Observation:**
+**Observation:**  Features of rain and snow have many zeros and the distribution is skewed. We may later choose to remove them as 'weather' attribute includes these informations anyways.
 
 ## Saving the preparared dataframe and calling the functions within the `main` function.
 
@@ -417,14 +410,14 @@ Now, parse datetime object in a new dataframe `df_new` to visualize the impact o
     df_processed.to_excel(prepared_data_xlsx_name, index = False) 
  ```
 **Call the plot functions to explore the data visaluations**
-Categorized hours and days are plotted using the the parsed dataframe which has the 'Hour' and 'Weekday' information
+Categorized hours, days and time forecasts are plotted using the parsed dataframe which has the 'Hour', 'Weekday' and 'Year' information
 ```     
     sbplt_categorize_dates(df_new)
+    sbplt_trfc_date(df_new)
 ```
-For other plots, the processed data used for simplicity
+For other plots, the processed data is used for simplicity
 ```
     plot_hldy(df_processed)
     plot_wthr(df_processed)
-    sbplt_trfc_date(df_processed)
     sbplts_wthr(df_processed)
 ```

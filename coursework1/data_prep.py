@@ -94,9 +94,9 @@ def plot_hldy(df_hldy):
         None
         
     """
-    #'None' composes of the vast majority of 'holiday' column. remove None to visualize the distribution of special days
+    # Remove None to visualize the distribution of special days
     spcl_df = df_hldy[df_hldy['holiday'] != 'None']
-    #aggregate traffic volume hour description in a new dataframe 
+    # Aggregate traffic volume hour description in a new dataframe 
     df_trfc_spcl = df_hldy.groupby(spcl_df['holiday']).aggregate({'traffic_volume':'mean'})
     print(df_trfc_spcl)
 
@@ -124,7 +124,7 @@ def sbplt_categorize_dates(df_ctgrz):
     df_day_traffic = df_ctgrz.groupby('categorized_weekday').aggregate({'traffic_volume':'mean'})
     print(df_day_traffic)
 
-    #create 2 subplots plotting the mean of traffic volume for each category of hour and weekday 
+    # plot mean of traffic volume for each category of hour and weekday 
     fig, axs = plt.subplots(2)
     fig.suptitle('Average traffic volume per categorized hour and weekday')
     axs[0].bar(df_hour_traffic.index, df_hour_traffic['traffic_volume'])
@@ -162,7 +162,7 @@ def sbplt_trfc_date(df_trfc):
     """
     #aggregate traffic volume over years
     df_agg_trfc = df_trfc.groupby('Year').aggregate({'traffic_volume':'mean'})
-    # plot Traffic volume per years
+    # plot traffic volume per years
     fig, axs = plt.subplots(2)
     fig.suptitle('Traffic volume over the years')
     axs[0].plot(df_trfc['date_time'], df_trfc['traffic_volume'])
@@ -184,7 +184,7 @@ def sbplts_wthr(df_wthr):
     """
 
     df_rain_trfc = df_wthr.groupby('rain').aggregate({'traffic_volume':'mean'})
-    #rain has an outlier that is its max value which distorts the distribution 
+    # Remove max value of 'rain' (outlier) 
     df_rain_trfc = df_wthr[df_wthr['rain'] != df_wthr['rain'].max()]
     df_snow_trfc = df_wthr.groupby('snow').aggregate({'traffic_volume':'mean'})
     df_cloud_trfc = df_wthr.groupby('cloud').aggregate({'traffic_volume':'mean'})
@@ -214,42 +214,42 @@ def process_data(data):
     # Dataframe with the data
     df = data
 
-    # Print the total number of rows and columns in the DataFrame
+    # Total number of rows and columns in the DataFrame
     print("\nShape\n", df.shape)
 
-    # Print the column headings only
+    # Column headings 
     print("\nColumns\n",df.columns)
 
-    # Rename columns for simplicity
+    # Rename columns
     df.rename(columns = {"rain_1h": "rain","snow_1h": "snow","clouds_all": "cloud","weather_main": "weather"},inplace = True)
 
-    # Print details - including data types about the rows and columns
-    print("\nInfo\n", df.info(verbose=True))  # there are no missing values
+    # Details 
+    print("\nInfo\n", df.info(verbose=True))  
 
-    # Print the first 5 rows
+    # First 5 rows
     print("\nHead - first 5 rows\n", df.head(5))
 
-    # Set pandas display options to the number of columns and rows in the dataframe
+    # Set pandas display options 
     pd.set_option('display.max_rows', df.shape[0] + 1)
     pd.set_option('display.max_columns', df.shape[1] + 1)
 
-    # Drop weather_description as it causes too much redundancy with weather_main
+    # Drop weather_description 
     df = df.drop(['weather_description'], axis=1)
     print(df.head(5))
 
-    #convert temperature in Kelvin to Celcius for simplicity
+    # Convert temperature to Celcius 
     df["temp"] = (df["temp"]-273.15)
 
-    # Print descriptions of the data 
+    # Descriptions of the data 
     print("\Statistical descriptions of data\n", df.describe()) 
 
-    # Print descriptions of the categorical data 
+    # Descriptions of the categorical data 
     print("\Statistical descriptions of categorical data\n", df.describe(include='object'))
 
-    # Print the number of ocurrences of values in the holiday column
+    # Number of ocurrences of values in the holiday column
     print("\Ocurrences/distribution of values in holiday\n", df['holiday'].value_counts()) 
 
-    # Print the number of duplicates in date column
+    # Number of duplicates in date column
     print("\Duplicates in date\n", df['date_time'].duplicated().sum())
 
     # Investigate which observations are duplicates
@@ -260,7 +260,7 @@ def process_data(data):
     df.drop_duplicates(subset=['date_time'],keep='last', inplace=True)
     print("\Duplicates in date\n", df['date_time'].duplicated().sum())
 
-    # Find the range of the data entries
+    # Range of the data entries
     print("\Min & Max values of data\n", df['date_time'].min(),df['date_time'].max()) 
 
     return df
@@ -270,20 +270,20 @@ def process_data(data):
 
 
 if __name__ == "__main__":
-    # Define the path to the excel datafile in a way that works on both Mac and Windows
+    # Define the path to the excel datafile 
     trfc_raw_xlsx = Path(__file__).parent.joinpath('data', 'data_set_initial.xlsx')
     # Load the xlsx file into a pandas DataFrame 
     df_trfc_raw_xlsx = pd.read_excel(trfc_raw_xlsx, sheet_name ='interstate-traffic')
     # Call the data_prep function and pass the data, return the processed data
     df_processed = process_data(df_trfc_raw_xlsx) 
-    #parse_datetime  
+    # Return parsed dataframe 
     df_new = parse_datetime(df_processed)
-    # Save the prepared dataframe
+    # Save the prepared/processed dataframe
     prepared_data_xlsx_name = Path(__file__).parent.joinpath('data', 'data_set_prepared.xlsx')
     df_processed.to_excel(prepared_data_xlsx_name, index = False) 
-    # Call the plot functions the explore the visualisations
-    #sbplt_categorize_dates(df_new)
-    #plot_hldy(df_processed)
+    # Call the plot functions 
+    sbplt_categorize_dates(df_new)
+    plot_hldy(df_processed)
     plot_wthr(df_processed)
     sbplt_trfc_date(df_new)
     sbplts_wthr(df_processed)

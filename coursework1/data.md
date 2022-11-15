@@ -323,7 +323,7 @@ Plot weather over traffic volume
     ax.set_title('traffic volume per weather features')
     plt.show()
 ```
-**Observation:** We find that almost all weather conditions yield similar traffic volumes expect for 'squal' in wich case we see a sudden drop in traffic intensity.
+**Observation:** We find that almost all weather conditions yield similar traffic volumes expect for 'squal' in which case we see a sudden drop in traffic intensity. Later stages, through correlation plots the relationships between the weather conditions and the traffic volume will be explored further to derive insightful patterns.
 
 ## Plot 4: (Aggregate) traffic volume over the years
 ```
@@ -353,7 +353,7 @@ create 2 subplots of traffic volume over the years, and aggregate traffic volume
     axs[1].plot(df_agg_trfc.index, df_agg_trfc['traffic_volume'])
     plt.show() 
 ```
-**Observation:** When we look at the annual recorded traffic volume plot (1st ploy), we see a gap within the data between 2014 and 2015 meaning we dont have any records of traffic volume data for year 2015. Hence, in future modeling and prediction stages, the focus will be on the period between 2016 and 2018 which appear to include complete information. From 2nd plot, with aggregate traffic volume we see a more clear trend. We see that there is a decreasing trend in mean traffic volume between 2013-2016, the peak is seen at 2017 than again a decreasing trend is observed.
+**Observation:** When we look at the annual recorded traffic volume plot (1st ploy), we see a gap within the data between 2014 and 2015 meaning we dont have any records of traffic volume data for year 2015. Hence, in future modeling and prediction stages, the focus will be on the period between 2016 and 2018 which appear to include complete information. From 2nd plot, with aggregate traffic volume we see a more clear trend. We see that there is a decreasing trend in mean traffic volume between 2013-2016, than a sudden peak is seen at 2017 than again a decreasing trend is observed.
 
 
 ## Plot 5: Aggregate traffic volume per weather features

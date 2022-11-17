@@ -256,7 +256,7 @@ def process_data(data):
     duplicates = df[df.duplicated(keep=False)]
     print("\Visualize duplicates in date\n", duplicates['date_time'])
 
-    # Drop the duplicate date entries 
+    # Drop the duplicate entries in date 
     df.drop_duplicates(subset=['date_time'],keep='last', inplace=True)
     print("\Duplicates in date\n", df['date_time'].duplicated().sum())
 
@@ -265,7 +265,6 @@ def process_data(data):
 
     return df
     
-
     
 
 

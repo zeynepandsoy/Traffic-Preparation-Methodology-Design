@@ -3,7 +3,7 @@
 ### Import necessary libraries
 ```
 import pandas as pd
-import numpy as np
+import seaborn as sns
 import matplotlib.pyplot as plt
 from pathlib import Path
 ```
@@ -209,6 +209,10 @@ def parse_datetime(df):
     df_copy['Weekday'] = df_copy['date_time'].dt.weekday
     df_copy['Hour'] = df_copy['date_time'].dt.hour
 ```
+Drop 'date_time' column as we have derived new characteristics parsing it
+```
+    df_copy = df_copy.drop(['date_time'], axis=1)
+```
 Using `categorize_hour()`, add a column to the dataframe giving textual decription of time periods based on hours
 ```
     df_copy['categorized_hour'] = df_copy['Hour'].apply(categorize_hour)
@@ -257,8 +261,7 @@ plot aggregate traffic volume with respect to holiday days
 
 **Observation:** From the plot, we observe that the most intense traffic jams happen during New Years Day, than respectively Memorial and Independence Day. Least traffic congestion happens on Colombus Day.
 
-
-## Plot 2 : Aggregate traffic volume in 2 subplots, first with respect to categorized hour than to categorized weekday
+## Plot 2 : Aggregate traffic volume with respect to categorized hour than to categorized weekday
 ```
 def sbplt_categorize_dates(df_ctgrz):
     """
@@ -323,11 +326,11 @@ Plot weather over traffic volume
 ```
 **Observation:** We find that almost all weather conditions yield similar traffic volumes expect for 'squal' in which case we see a sudden drop in traffic intensity. Later stages, through correlation plots the relationships between the weather conditions and the traffic volume will be explored further to derive insightful patterns.
 
-## Plot 4: (Aggregate) traffic volume over the years
+## Plot 4 : Plot the evolution of traffic volume over time
 ```
-def sbplt_trfc_date(df_trfc):
+def plt_trfc_dt(df_trfc):
     """
-    This function generates 2 subplots displaying the evolution of traffic volume with respect to time
+    This function plots the evolution of traffic volume with respect to time
 
     Args:
         df_trfc: dataframes to be plotted
@@ -337,24 +340,45 @@ def sbplt_trfc_date(df_trfc):
         
     """
 ```
+Plot traffic volume over date time
+```
+    fig, ax = plt.subplots(figsize=(10,6))
+    ax.plot(df_trfc['date_time'], df_trfc['traffic_volume'])
+    ax.set_title('traffic volume over time')
+    plt.show()
+```
+**Observation:** When we look at the annual recorded traffic volume plot, we see a gap within the data between 2014 and 2015 meaning we dont have any records of traffic volume data for year 2015. Hence, in future modeling and prediction stages, the focus will be on the period between 2016 and 2018 which appear to include complete information.
+
+## Plot 5: (Aggregate) traffic volume over the years
+```
+def plt_agg_trfc_dt(df_trfc):
+    """
+    This function plots the aggregate traffic volume over time.
+
+    Args:
+        df_trfc: dataframe to be plotted
+
+    Returns:
+        None   
+    """
+```
 Undertanding how traffic volume changes over time can reveal useful insights about seasanol and annual patterns of traffic volumes. These findins are exceptionally important in future forecasting.
 
 Aggregate traffic volume over years
 ```
     df_agg_trfc = df_trfc.groupby('Year').aggregate({'traffic_volume':'mean'})
 ````
-create 2 subplots of traffic volume over the years, and aggregate traffic volume over the years
+plot aggregate traffic volume over the years
 ```
-    fig, axs = plt.subplots(2)
-    fig.suptitle('Traffic volume over the years')
-    axs[0].plot(df_trfc['date_time'], df_trfc['traffic_volume'])
-    axs[1].plot(df_agg_trfc.index, df_agg_trfc['traffic_volume'])
+    fig, ax = plt.subplots(figsize=(10,6))
+    fig.suptitle('Aggregate traffic volume over the years')
+    ax.plot(df_agg_trfc.index, df_agg_trfc['traffic_volume'])
     plt.show() 
 ```
-**Observation:** When we look at the annual recorded traffic volume plot (1st ploy), we see a gap within the data between 2014 and 2015 meaning we dont have any records of traffic volume data for year 2015. Hence, in future modeling and prediction stages, the focus will be on the period between 2016 and 2018 which appear to include complete information. From 2nd plot, with aggregate traffic volume we see a more clear trend. We see that there is a decreasing trend in mean traffic volume between 2013-2016, than a sudden peak is seen at 2017 than again a decreasing trend is observed.
+**Observation:**  With aggregate traffic volume we see a more clear trend. We see that there is a decreasing trend in mean traffic volume between 2013-2016, than a sudden peak is seen at 2017 with exceptionally high traffic volumes, than again a decreasing trend is observed.
 
 
-## Plot 5: Aggregate traffic volume per weather features
+## Plot 6: Aggregate traffic volume per weather features
 ```
 def sbplts_wthr(df_wthr):
     """
@@ -387,7 +411,28 @@ Plot weather features over traffic volume
     axs[2].bar(df_cloud_trfc.index, df_cloud_trfc['traffic_volume'])
     plt.show()
 ```
-**Observation:**  Features of rain and snow have many zeros and the distribution is skewed. We may later choose to remove them as 'weather' attribute includes these informations anyways.
+**Observation:**  Features of rain and snow have many zeros and the distribution is skewed. We may later choose to remove them as 'weather' attribute includes these informations anyways. Distribution of cloud coverage is not well presented. 
+
+## Plot 7: Plot the distribution of cloud coverage to observe a clearer trend
+
+cloud indicates the cloud coverage for the given day and hour. Plot the distribution plot of cloud coverage seperately.
+```
+def plot_clouds(df):
+    """
+    This function plots the distribution of cloud coverage as a histogram
+
+    Args:
+        df: dataframe to be plotted
+
+    Returns:
+        None
+    """   
+    # plot the distribution of cloud coverage
+    sns.histplot(df.cloud)
+    plt.show()
+```
+**Observation:** Histogram of cloud coverage is not symmetrical and has two peaks, one peak near the 0% coverage threshold and the other peak close to 100%
+
 
 ## Saving the preparared dataframe and calling the functions within the `main` function.
 
@@ -395,27 +440,28 @@ First, call the data preparation function`process_data()` and pass the data, ret
 ```
 if __name__ == "__main__":
     ...
-    # Call the data_prep function and pass the data, return the processed data
     df_processed = process_data(df_trfc_raw_xlsx) 
 ```
 Now, parse datetime object in a new dataframe `df_new` to visualize the impact of each date and time characteristics on traffic volume
 ```
-    df_new = parse_datetime(df_processed)
+    df_prepared = parse_datetime(df_processed)
 ```
- Save the prepared dataframe (`df_processed`) in excel format
+ Save the prepared dataframe (`df_prepared`) in excel format
 ```
     prepared_data_xlsx_name = Path(__file__).parent.joinpath('data', 'data_set_prepared.xlsx')
-    df_processed.to_excel(prepared_data_xlsx_name, index = False) 
+    df_prepared.to_excel(prepared_data_xlsx_name, index = False) 
  ```
 **Call the plot functions to explore the data visaluations**
 Categorized hours, days and time forecasts are plotted using the parsed dataframe which has the 'Hour', 'Weekday' and 'Year' information
 ```     
-    sbplt_categorize_dates(df_new)
-    sbplt_trfc_date(df_new)
+    sbplt_categorize_dates(df_prepared)
+    plt_agg_trfc_dt(df_prepared)
 ```
 For other plots, the processed data is used for simplicity
 ```
     plot_hldy(df_processed)
     plot_wthr(df_processed)
     sbplts_wthr(df_processed)
+    plot_clouds(df_processed)
+    plt_trfc_dt(df_processed)
 ```

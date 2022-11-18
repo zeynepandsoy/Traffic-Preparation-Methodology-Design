@@ -8,6 +8,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'pandas',
+        'seaborn'
         'numpy',
         'matplotlib',
         'openpyxl'

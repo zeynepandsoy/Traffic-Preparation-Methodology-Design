@@ -75,6 +75,8 @@ def parse_datetime(df):
     df_copy['Day'] = df_copy['date_time'].dt.day
     df_copy['Weekday'] = df_copy['date_time'].dt.weekday
     df_copy['Hour'] = df_copy['date_time'].dt.hour
+    # drop 'date_time' column as we have created new characteristics parsing it
+    df_copy = df_copy.drop(['date_time'], axis=1)
     # Add a column to the dataframe giving textual decription of time periods based on hours
     df_copy['categorized_hour'] = df_copy['Hour'].apply(categorize_hour)
     # Add another column to the dataframe giving textual decription of weekdays
@@ -276,14 +278,14 @@ if __name__ == "__main__":
     # Call the data_prep function and pass the data, return the processed data
     df_processed = process_data(df_trfc_raw_xlsx) 
     # Return parsed dataframe 
-    df_new = parse_datetime(df_processed)
+    df_prepared = parse_datetime(df_processed)
     # Save the prepared/processed dataframe
     prepared_data_xlsx_name = Path(__file__).parent.joinpath('data', 'data_set_prepared.xlsx')
-    df_processed.to_excel(prepared_data_xlsx_name, index = False) 
+    df_prepared.to_excel(prepared_data_xlsx_name, index = False) 
     # Call the plot functions 
-    sbplt_categorize_dates(df_new)
+    sbplt_categorize_dates(df_prepared)
+    sbplt_trfc_date(df_prepared)
     plot_hldy(df_processed)
     plot_wthr(df_processed)
-    sbplt_trfc_date(df_new)
     sbplts_wthr(df_processed)
     

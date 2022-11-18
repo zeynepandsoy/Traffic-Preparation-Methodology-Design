@@ -220,7 +220,7 @@ Using `categorize_hour()`, add a column to the dataframe giving textual decripti
 Using `categorize_day()`, add a column to the dataframe giving textual decription of weekdays 
 ```
    df_copy['categorized_weekday'] = df_copy['Weekday'].apply(categorize_day)
-    return df_copy
+   return df_copy
 ```
 
 
@@ -337,7 +337,6 @@ def plt_trfc_dt(df_trfc):
 
     Returns:
         None
-        
     """
 ```
 Plot traffic volume over date time
@@ -442,7 +441,7 @@ if __name__ == "__main__":
     ...
     df_processed = process_data(df_trfc_raw_xlsx) 
 ```
-Now, parse datetime object in a new dataframe `df_new` to visualize the impact of each date and time characteristics on traffic volume
+Now, parse datetime object in a new dataframe `df_prepared` to visualize the impact of each date and time characteristics on traffic volume
 ```
     df_prepared = parse_datetime(df_processed)
 ```

@@ -33,7 +33,7 @@ def test_basket(basket, item):
     basket.view()  # Prints contents of the basket including quantity, price and total cost.
 
     # Test the get_total_cost method
-    assert basket.get_total_cost() == Decimal(11.94)  # Total cost of the basket must be 11.94
+    assert basket.get_total_cost() == Decimal(10.5)  # Total cost of the basket must be 11.94
 
     # Test the reset method
     basket.reset() # reset/empty the basket

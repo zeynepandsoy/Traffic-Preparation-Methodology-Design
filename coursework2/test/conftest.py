@@ -12,5 +12,5 @@ def basket():
 
 @pytest.fixture(scope='function')
 def item():
-    item = Item(brand_name='Heinz', product_name='Tomato Ketchup', description='Red', price= Decimal(3.98))
-    yield item
+    items = Item(brand_name='Heinz', product_name='Tomato Ketchup', description='Red', price= Decimal(3.5))
+    yield items

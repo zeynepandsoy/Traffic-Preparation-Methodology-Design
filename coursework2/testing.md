@@ -53,3 +53,6 @@ FAILED (failures=4)
 
 ## 9 unit tests ran, 5 tests PASSED and 4 tests FAILED
 
+# Code Coverage
+<img width="339" alt="Screenshot 2023-01-04 at 16 01 02" src="https://user-images.githubusercontent.com/115081167/210562312-0c622e1c-5600-438b-9d1f-42a43c5d9a36.png">
+

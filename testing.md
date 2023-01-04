@@ -43,6 +43,6 @@ Traceback (most recent call last):
 AssertionError: None != { Brand1, Product1, Description1, 10.50: [40 chars]0: 2}
 
 ----------------------------------------------------------------------
-Ran 9 tests in 0.006s
+Ran 9 tests in 0.002s
 
 FAILED (failures=4)

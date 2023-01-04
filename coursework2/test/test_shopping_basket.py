@@ -45,7 +45,7 @@ def test_basket(basket, item):
 """
 import unittest
 from decimal import Decimal
-from coursework2.src.shopping_basket import Item, Basket
+from shopping_basket import Item, Basket
 
 class TestItem(unittest.TestCase):  #Create a TestItem class extending the class unittest.TestCase
     def test_init(self):   # the method test_init accepts self as an argument
@@ -128,7 +128,7 @@ suite = unittest.TestSuite() #create a test suite from the the classes TestItem 
 suite.addTest(unittest.makeSuite(TestItem))
 suite.addTest(unittest.makeSuite(TestBasket))
 
-with open("coursework2/testing.md", "w") as f:
+with open("testing.md", "w") as f:
     runner = unittest.TextTestRunner(stream=f)
     # Run the tests and redirect the output to the file
     res = runner.run(suite)

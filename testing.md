@@ -45,6 +45,6 @@ Traceback (most recent call last):
 AssertionError: None != { H&M, t-shirt, white, 10.50: 3,  Zara, trouser, blue, 20.50: 2}
 
 ----------------------------------------------------------------------
-Ran 9 tests in 0.008s
+Ran 9 tests in 0.002s
 
 FAILED (failures=4)

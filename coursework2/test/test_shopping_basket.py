@@ -47,27 +47,38 @@ import unittest
 from decimal import Decimal
 from shopping_basket import Item, Basket
 
+## Test Item class
 class TestItem(unittest.TestCase):  #Create a TestItem class extending the class unittest.TestCase
-    def test_init(self):   # the method test_init accepts self as an argument
+    # test_init tests whether the constructor init works as intended
+    def test_init(self):   
         item = Item("Brand", "Product", "Description", Decimal("10.50"))
         self.assertEqual(item.brand_name, "Brand")
         self.assertEqual(item.product_name, "Product")
         self.assertEqual(item.description, "Description")
         self.assertEqual(item.price, Decimal("10.50"))
 
-    def test_repr(self):
+    # test_repr tests whether the string representation of the contructor works as intended
+    def test_repr(self): 
         item = Item("Brand", "Product", "Description", Decimal("10.50"))
         self.assertEqual(repr(item), "Brand, Product, Description, 10.50")
 
+## Test Basket class
 class TestBasket(unittest.TestCase):  #Create a TestBasket class extending the class unittest.TestCase
+    # instead of creating the items as fixtures, setup of items are also tested 
     def setUp(self):
-        self.item1 = Item("Brand1", "Product1",
-                          "Description1", Decimal("10.50"))
-        self.item2 = Item("Brand2", "Product2",
-                          "Description2", Decimal("20.50"))
+        self.item1 = Item("H&M", "t-shirt",
+                          "white", Decimal("10.50"))
+        self.item2 = Item("Zara", "trouser",
+                          "blue", Decimal("20.50"))
         self.basket = Basket()
 
+    #Test add_item method
     def test_add_item(self):
+        """
+        GIVEN 2 items with positive quantity 
+        WHEN the items are passed to add_item function with below quantity specifications
+        THEN the result is quantity of item1 is 4 and the quantity of item2 is 2
+        """
         self.basket.add_item(self.item1)
         self.assertEqual(self.basket.items, {self.item1: 1})
         self.basket.add_item(self.item1, 3)
@@ -75,17 +86,29 @@ class TestBasket(unittest.TestCase):  #Create a TestBasket class extending the c
         self.basket.add_item(self.item2, 2)
         self.assertEqual(self.basket.items, {self.item1: 4, self.item2: 2})
 
+    #Test remove_item method
     def test_remove_item(self):
+        """
+        GIVEN 2 items with positive quantity 
+        WHEN the items are passed to remove_item function with below quantity specifications
+        THEN the result should remove all items from basket
+        """
         self.basket.add_item(self.item1, 3)
         self.basket.add_item(self.item2, 2)
-        self.basket.remove_item(self.item1)
-        self.assertEqual(self.basket.items, {self.item2: 2})
+        self.basket.remove_item(self.item1)  
+        self.assertEqual(self.basket.items, {self.item2: 2}) #should remove item1
+        self.basket.remove_item(self.item2, 1) 
+        self.assertEqual(self.basket.items, {self.item2: 1}) #should reduce quantity of item2 by 1
         self.basket.remove_item(self.item2, 1)
-        self.assertEqual(self.basket.items, {self.item2: 1})
-        self.basket.remove_item(self.item2, 1)
-        self.assertEqual(self.basket.items, {})
+        self.assertEqual(self.basket.items, {}) # should remove all items from the basket
 
+    #Test update_item method
     def test_update_item(self):
+        """
+        GIVEN 1 item with positive and 1 item with negative quantity 
+        WHEN the items are passed to update_item function with below quantity specifications
+        THEN the final update of the results is quantity of item1 is 1 and the quantity of item2 is 2
+        """
         self.basket.add_item(self.item1, 3)
         self.basket.add_item(self.item2, 2)
         self.basket.update_item(self.item1, 2)
@@ -99,38 +122,62 @@ class TestBasket(unittest.TestCase):  #Create a TestBasket class extending the c
         self.basket.update_item(self.item1, 1)
         self.assertEqual(self.basket.items, {self.item1: 1, self.item2: 2})
 
+    #Test view method 
     def test_view(self):
+        """
+        GIVEN 2 items with positive quantity 
+        WHEN the items are passed to view function with below quantity specifications
+        THEN the results should return the contents of the basket with 3 of item1 and 2 of item2
+        """
         self.basket.add_item(self.item1, 3)
         self.basket.add_item(self.item2, 2)
         self.assertEqual(self.basket.view(), {self.item1: 3, self.item2: 2})
 
+    #Test get_total_cost method
     def test_get_total_cost(self):
+        """
+        GIVEN 2 items with positive quantity 
+        WHEN the items are passed to get_total_cost function with below quantity specifications
+        THEN the result should be 81.00
+        """
         self.basket.add_item(self.item1, 3)
         self.basket.add_item(self.item2, 2)
         self.assertEqual(self.basket.get_total_cost(), Decimal("81.00"))
 
+    #Test reset method
     def test_reset(self):
+        """
+        GIVEN 2 items with positive quantity 
+        WHEN the items are passed to reset function with below quantity specifications
+        THEN the result should reset the basket 
+        """
         self.basket.add_item(self.item1, 3)
         self.basket.add_item(self.item2, 2)
         self.basket.reset()
         self.assertEqual(self.basket.items, {})
         self.assertFalse(self.basket.checkout)
 
+    #Test is_empty method
     def test_is_empty(self):
+        """
+        GIVEN an items with positive quantity 
+        WHEN the item is passed to is_empty function with below quantity specification
+        THEN the result should empty the basket and verify the basket is empty by asserting TRUE 
+        """
         self.assertTrue(self.basket.is_empty())
         self.basket.add_item(self.item1, 3)
         self.assertFalse(self.basket.is_empty())
         self.basket.reset()
         self.assertTrue(self.basket.is_empty())
 
-
-suite = unittest.TestSuite() #create a test suite from the the classes TestItem and TestBasket
+# Create a test suite from the the classes TestItem and TestBasket
+suite = unittest.TestSuite() 
 suite.addTest(unittest.makeSuite(TestItem))
 suite.addTest(unittest.makeSuite(TestBasket))
 
 with open("testing.md", "w") as f:
     runner = unittest.TextTestRunner(stream=f)
-    # Run the tests and redirect the output to the file
+    # Run the tests and redirect the output to the markdown file
     res = runner.run(suite)
 
 #if __name__ == '__main__':

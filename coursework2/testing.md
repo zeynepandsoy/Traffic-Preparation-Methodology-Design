@@ -1,3 +1,7 @@
+# Results of the unit tests
+
+### Note: As instead of pytest, unittest is used no fixtures are created (although in conftest.py within docstrings I have provided the fixtures that I have initially created through pytest - but instead decided to use the appropriate version setUp() to build the common function)
+
 .F.F...FF
 ======================================================================
 FAIL: test_repr (test_shopping_basket.TestItem)
@@ -46,3 +50,6 @@ AssertionError: None != { Brand1, Product1, Description1, 10.50: [40 chars]0: 2}
 Ran 9 tests in 0.006s
 
 FAILED (failures=4)
+
+## 9 unit tests ran, 5 tests PASSED and 4 tests FAILED
+

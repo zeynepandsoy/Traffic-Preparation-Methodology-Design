@@ -3,13 +3,10 @@ import pytest
 from decimal import Decimal
 from coursework2.src.shopping_basket import Basket, Item
 
+Below fixtures were initially created but then were decided to turn into tests 
 @pytest.fixture(scope="function")
 def basket():
     yield Basket()
-
-#@pytest.fixture(scope="function")
-#def item():
-#    yield Item()
 
 @pytest.fixture(scope='function')
 def item():

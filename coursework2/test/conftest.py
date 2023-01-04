@@ -1,3 +1,4 @@
+"""
 import pytest
 from decimal import Decimal
 from coursework2.src.shopping_basket import Basket, Item
@@ -14,3 +15,4 @@ def basket():
 def item():
     items = Item(brand_name='Heinz', product_name='Tomato Ketchup', description='Red', price= Decimal(3.5))
     yield items
+"""

@@ -25,6 +25,6 @@ The app enables users to analyze historical traffic data from the MN DoT ATR sta
 
 ## Dataset
 
-The excel datafile [Available here](https://archive.ics.uci.edu/ml/datasets/Metro%20Interstate%20Traffic%20Volume) comprises hourly Interstate 94 Westbound traffic volume for MN DoT ATR station 301, roughly midway between Minneapolis and St Paul, MN. The data ranges from November 2012 to September 2018 and includes attributes such as weather features and holidays to determine impacts on traffic volume.
+The [excel datafile](https://archive.ics.uci.edu/ml/datasets/Metro%20Interstate%20Traffic%20Volume) comprises hourly Interstate 94 Westbound traffic volume for MN DoT ATR station 301, roughly midway between Minneapolis and St Paul, MN. The data ranges from November 2012 to September 2018 and includes attributes such as weather features and holidays to determine impacts on traffic volume.
 
 
